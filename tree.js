@@ -72,10 +72,104 @@ const Tree = (array) => {
         // Remove duplicated elements
         return remover(sorted);
     }
-    let processed = preProcess();
+
+    const insert = (value, node = root) => {
+        // Search the position that this value should be
+        // Replace the leaf node with a new node with the value
+        if(node.data < value) {
+            if(node.right == null) return node.right = TreeNode(value);
+            return insert(value, node.right);
+        }
+        if(node.data > value) {
+            if(node.left == null) return node.left = TreeNode(value);
+            return insert(value, node.left);
+        }
+    }
+
+    const remove = (value, node = root) => {
+
+
+        // Base case
+        if (node === null) return node;
+
+        // Traverse the tree, until find the value if exists
+
+        if(node.data > value){
+            node.left = remove(value, node.left);
+        }
+        if( node.data < value){
+            node.right = remove(value, node.right);
+        }
+
+        // Find value now delete
+        if(node.data === value){
+            node = rmHelp(node);
+            return
+        }
+
+        return node
+    }
+
+    const rmHelp = (node) => {
+
+        // Returns null if node has no children
+        
+        if(!node.left && !node.right){
+            return null;
+        }
+
+        // If has one child, returns that child
+
+        if(!node.left) return node.right
+        if(!node.right) return node.left
+
+        // If has two children, returns the node just biggest than that
+        // that can be accomplished by going to the right subtree and and then all the way to the left if it exits
+        
+        return findBiggest(node);
+    }
+
+    function findBiggest(node){
+
+        let rightSubTree = node.right;
+
+        if(!rightSubTree.left){
+            rightSubTree.left = node.left;
+            return rightSubTree
+        };
+
+        while(rightSubTree.left){
+            rightSubTree = rightSubTree.left
+        }
+
+        rightSubTree.left = node.left;
+
+        return rightSubTree
+    }
+
+    const find = (value, node = root) => {
+        if(node === null) return 'Cannot find value';
+        if(node.data === value) return node;
+        if(value < node.data){
+            return find(value, node.left);
+        }
+        if(value > node.data){
+            return find(value, node.right);
+        }
+    }
+
+    const levelOrder = (callback) => {
+        
+    }
+
+    let sorted = preProcess();
+    let root = buildTree(sorted,0,sorted.length-1);
 
     return {
-        root : buildTree(processed,0,processed.length-1),
+        root : root,
+        insert,
+        remove,
+        find
     }
 }
 
@@ -89,7 +183,9 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     }
 }
 
-const example = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
-const tree = Tree(example);
-
-prettyPrint(tree.root);
+let tree1 = Tree([1, 7, 4, 6, 10,8 ,3,9,11,12]);
+let v = 7;
+prettyPrint(tree1.root);
+tree1.remove(v);
+console.log('Removing... ', v);
+prettyPrint(tree1.root);
