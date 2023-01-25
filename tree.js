@@ -88,7 +88,6 @@ const Tree = (array) => {
 
     const remove = (value, node = root) => {
 
-
         // Base case
         if (node === null) return node;
 
@@ -103,30 +102,28 @@ const Tree = (array) => {
 
         // Find value now delete
         if(node.data === value){
-            node = rmHelp(node);
-            return
+            
+            // Set node to null if node has no children
+            
+            if(!node.left && !node.right) return node = null;
+
+            // If has one child, returns that child
+
+            if(!node.left) return node = node.right;
+            if(!node.right) return node = node.left;
+            
+            // If has two children, returns the node just biggest than that
+            // that can be accomplished by going to the right subtree and and then all the way to the left if it exits
+            console.log(node);
+            let temp = findBiggest(node);
+            console.log('temp',temp);
+            node = temp;
+            console.log('replaced node',node);
+            node.right = remove(node.right, temp.data);
+            console.log('right changed',node);
+
+            return node;
         }
-
-        return node
-    }
-
-    const rmHelp = (node) => {
-
-        // Returns null if node has no children
-        
-        if(!node.left && !node.right){
-            return null;
-        }
-
-        // If has one child, returns that child
-
-        if(!node.left) return node.right
-        if(!node.right) return node.left
-
-        // If has two children, returns the node just biggest than that
-        // that can be accomplished by going to the right subtree and and then all the way to the left if it exits
-        
-        return findBiggest(node);
     }
 
     function findBiggest(node){
@@ -158,10 +155,22 @@ const Tree = (array) => {
         }
     }
 
-    const levelOrder = (callback) => {
-        
-    }
+    const levelOrder = (callback, node = root) => {
+        let queue = [];
+        let array = [];
+        if(node) queue.push(node);
 
+        while(queue[0]){
+            callback ? callback(queue[0]) : array.push(queue[0].data) ;
+            if(queue[0].left) queue.push(queue[0].left);
+            if(queue[0].right) queue.push(queue[0].right);
+            queue.shift();
+        }
+
+        if(array.length > 0) return array;
+
+    }
+    
     let sorted = preProcess();
     let root = buildTree(sorted,0,sorted.length-1);
 
@@ -169,10 +178,10 @@ const Tree = (array) => {
         root : root,
         insert,
         remove,
-        find
+        find,
+        levelOrder
     }
 }
-
 const prettyPrint = (node, prefix = '', isLeft = true) => {
     if (node.right !== null) {
       prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
@@ -183,9 +192,17 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     }
 }
 
+function remove(tree, value) {
+    let v = value;
+    prettyPrint(tree.root);
+    tree1.remove(v);
+    console.log('Removing... ', v);
+    prettyPrint(tree.root);
+
+    return 'done';
+}
+
 let tree1 = Tree([1, 7, 4, 6, 10,8 ,3,9,11,12]);
-let v = 7;
 prettyPrint(tree1.root);
-tree1.remove(v);
-console.log('Removing... ', v);
-prettyPrint(tree1.root);
+
+tree1.levelOrder((value)=>console.log(value.data));
