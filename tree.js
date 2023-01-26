@@ -112,18 +112,23 @@ const Tree = (array) => {
             if(!node.left) return node = node.right;
             if(!node.right) return node = node.left;
             
-            // If has two children, returns the node just biggest than that
-            // that can be accomplished by going to the right subtree and and then all the way to the left if it exits
-            console.log(node);
+            // If has two children
+            console.log('First Node',node);
+            
+            // Find findMinFromLeft
             let temp = findBiggest(node);
             console.log('temp',temp);
-            node = temp;
-            console.log('replaced node',node);
-            node.right = remove(node.right, temp.data);
+
+            // Copy tmp.data to node.data
+            node.data = temp.data;
+            console.log('Node data must be equal to temp,data',node);
+
+            // Delete duplicate
+            node.right = remove(node.right,node.right);
             console.log('right changed',node);
 
-            return node;
-        }
+        } 
+        return node;
     }
 
     function findBiggest(node){
@@ -131,15 +136,12 @@ const Tree = (array) => {
         let rightSubTree = node.right;
 
         if(!rightSubTree.left){
-            rightSubTree.left = node.left;
             return rightSubTree
         };
 
         while(rightSubTree.left){
             rightSubTree = rightSubTree.left
         }
-
-        rightSubTree.left = node.left;
 
         return rightSubTree
     }
@@ -171,6 +173,66 @@ const Tree = (array) => {
 
     }
     
+    const inorder = (callback, node = root, array = []) => {
+        if(node === null) return;
+
+        inorder(callback, node.left, array);
+        callback ? callback(node) : array.push(node.data);
+        inorder(callback, node.right, array);
+
+        if(array.length > 0) return array;
+    }
+
+    const preOrder = (callback,node = root, array = []) => {
+        if(node === null) return;
+
+        callback ? callback(node) : array.push(node.data);
+        preOrder(callback, node.left, array);
+        preOrder(callback, node.right, array);
+
+        if(array.length > 0) return array;
+    }
+
+    const postOrder = (callback,node = root, array = []) => {
+        if(node === null) return;
+
+        postOrder(callback, node.left, array);
+        postOrder(callback, node.right, array);
+        callback ? callback(node) : array.push(node.data);
+
+        if(array.length > 0) return array;
+    }
+
+    const height = (node = root)=> {
+        if(node === null) return 0;
+
+        const leftHeight = height(node.left);
+        const rightHeight = height(node.right);
+
+        return Math.max(leftHeight, rightHeight) + 1
+    }
+
+    const depth = (value, node = root, counter = 1) => {
+        if(node === null) return 0
+        if(node.data === value) return counter
+
+        if(node.data < value){
+            return depth(value,node.right, ++counter)
+        }else{
+            return depth(value,node.left, ++counter)
+        }
+    }
+
+    const isBalanced = (node = root) => {
+
+    }
+
+    const rebalance = () => {
+        let array = inorder();
+        this.root = buildTree(array,0,array.length-1);
+    }
+
+
     let sorted = preProcess();
     let root = buildTree(sorted,0,sorted.length-1);
 
@@ -179,7 +241,14 @@ const Tree = (array) => {
         insert,
         remove,
         find,
-        levelOrder
+        levelOrder,
+        height,
+        depth,
+        inorder,
+        preOrder,
+        postOrder,
+        isBalanced,
+        rebalance
     }
 }
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -202,7 +271,10 @@ function remove(tree, value) {
     return 'done';
 }
 
-let tree1 = Tree([1, 7, 4, 6, 10,8 ,3,9,11,12]);
-prettyPrint(tree1.root);
+let tree1 = Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 
-tree1.levelOrder((value)=>console.log(value.data));
+prettyPrint(tree1.root);
+console.log('');
+
+tree1.remove(8);
+prettyPrint(tree1.root);
