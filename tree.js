@@ -113,19 +113,15 @@ const Tree = (array) => {
             if(!node.right) return node = node.left;
             
             // If has two children
-            console.log('First Node',node);
             
             // Find findMinFromLeft
             let temp = findBiggest(node);
-            console.log('temp',temp);
 
             // Copy tmp.data to node.data
             node.data = temp.data;
-            console.log('Node data must be equal to temp,data',node);
 
             // Delete duplicate
             node.right = remove(node.right,node.right);
-            console.log('right changed',node);
 
         } 
         return node;
@@ -223,21 +219,37 @@ const Tree = (array) => {
         }
     }
 
-    const isBalanced = (node = root) => {
-
+    const isBalanced = () => {
+        return _isBalanced() != -1
     }
 
-    const rebalance = () => {
+    const _isBalanced = (node = root) => {
+        if (node === null) return 0;
+
+        // Check left
+        let leftHeight = _isBalanced(node.left);
+        if(leftHeight == -1) return -1;
+        
+        // Check right
+        let rightHeight = _isBalanced(node.right);
+        if(rightHeight === -1) return -1
+
+        // Check difference between heights
+        if(Math.abs(leftHeight - rightHeight) > 1) return -1
+
+        return Math.max(leftHeight, rightHeight) + 1
+    }
+
+    function rebalance(){
         let array = inorder();
-        this.root = buildTree(array,0,array.length-1);
+        return this.root = buildTree(array,0,array.length-1);
     }
-
 
     let sorted = preProcess();
     let root = buildTree(sorted,0,sorted.length-1);
 
     return {
-        root : root,
+        root,
         insert,
         remove,
         find,
@@ -261,8 +273,6 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     }
 }
 
-
-
 function remove(tree, value) {
     let v = value;
     prettyPrint(tree.root);
@@ -273,6 +283,13 @@ function remove(tree, value) {
     return 'done';
 }
 
-let tree1 = Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
+let tree1 = Tree([1, 7, 4, 23, 8, 9,]);
+tree1.insert(24);
+tree1.insert(25);
+tree1.insert(26);
+tree1.insert(27);
 
-remove(tree1,23)
+console.log('\n\n');
+console.log('height',tree1.isBalanced())
+console.log('\n\n');
+prettyPrint(tree1.root)
