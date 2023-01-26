@@ -261,11 +261,13 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     }
 }
 
+
+
 function remove(tree, value) {
     let v = value;
     prettyPrint(tree.root);
     tree1.remove(v);
-    console.log('Removing... ', v);
+    console.log('\nRemoving... ', v,'\n\n');
     prettyPrint(tree.root);
 
     return 'done';
@@ -273,8 +275,4 @@ function remove(tree, value) {
 
 let tree1 = Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 
-prettyPrint(tree1.root);
-console.log('');
-
-tree1.remove(8);
-prettyPrint(tree1.root);
+remove(tree1,23)
